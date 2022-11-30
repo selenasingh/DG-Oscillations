@@ -9,10 +9,17 @@ Path("figures").mkdir(exist_ok=True)
 
 class DGRate(object):
     def __init__(self,
-                 PP_freq):
+                 PP_freq,       # frequency of PP inputs
+                 fbi,           # scale feedback inhibition synaptic weights (between GCs and BCs)
+                 PP_weight,     # scale PP synaptic weight (onto GCs and BCs)
+                 ):
         self.pars = {}
         self.pars['input_freq'] = PP_freq
-        self.flag = PP_freq
+        self.pars['wPPg'] = PP_weight
+        self.pars['wgb'] = fbi
+        self.pars['wbg'] = fbi
+
+        self.flag = PP_freq + '_' + str(fbi) + '_' + str(PP_weight) 
 
         self.plot_dg_rates()
         self.plot_cell_fi()
@@ -21,31 +28,31 @@ class DGRate(object):
 
         # gc parameters
         self.pars['tau_g'] = 3.1  # membrane timescale of granule cell [ms]
-        self.pars['gain_g'] = 60  # gain of granule cell
-        self.pars['thresh_g'] = 0.015  # threshold of granule cell
+        self.pars['gain_g'] = 60  # gain of granule cell (3 matches)
+        self.pars['thresh_g'] = 0.055  # threshold of granule cell
 
         # bc parameters
         self.pars['tau_b'] = 1.0  # membrane timescale of basket cell [ms]
-        self.pars['gain_b'] = 180  # gain of basket cell
-        self.pars['thresh_b'] = 0.01  # threshold of basket cell
+        self.pars['gain_b'] = 250  # gain of basket cell
+        self.pars['thresh_b'] = 0.025  # threshold of basket cell
 
         # mc parameters
         self.pars['tau_m'] = 3.5  # membrane timescale of mossy cell [ms]
-        self.pars['gain_m'] = 100  # gain of mossy cell
-        self.pars['thresh_m'] = 0  # threshold of mossy cell
+        self.pars['gain_m'] = 25  # gain of mossy cell
+        self.pars['thresh_m'] = 0.005  # threshold of mossy cell
 
         # hc parameters
         self.pars['tau_h'] = 1.5  # membrane timescale of hipp cell [ms]
-        self.pars['gain_h'] = 30  # gain of hipp cell
+        self.pars['gain_h'] = 20  # gain of hipp cell
         self.pars['thresh_h'] = 0  # threshold of hipp cell
 
         # synaptic weights
         self.pars['wgg'] = 1.  # GC to GC
         self.pars['wmg'] = 1.  # MC to GC
-        self.pars['wbg'] = 3  # BC to GC ; 1 for lesion study
+        #self.pars['wbg'] = 3  # BC to GC ; 1 for lesion study
         self.pars['whg'] = 1.  # HC to GC
         self.pars['wbb'] = 1.  # BC to BC
-        self.pars['wgb'] = 3.  # GC to BC ; 0 for lesion study
+        #self.pars['wgb'] = 3.  # GC to BC ; 0 for lesion study
         self.pars['wmb'] = 1.  # MC to BC
         self.pars['whb'] = 1.  # HC to BC
         self.pars['wmm'] = 1.  # MC to MC
@@ -55,7 +62,7 @@ class DGRate(object):
         self.pars['wmh'] = 1.  # MC to HC
         self.pars['wgh'] = 1.  # GC to HC
 
-        self.pars['wPPg'] = 1.0  # scale PP synaptic weight to gcs ; 2.0 for lesion study
+        #self.pars['wPPg'] = 1  # scale PP synaptic weight to gcs ; 2.0 for lesion study
         self.pars['wPPb'] = self.pars['wPPg']/2  # scale PP synaptic input to bcs
 
         # integration parameters
@@ -85,7 +92,7 @@ class DGRate(object):
 
         periodic_forcing = []
         for x in self.pars['range_t']:
-            periodic_forcing.append((1 + cos(cos_scale * x))/2)
+            periodic_forcing.append((1 + cos(cos_scale * x))/2) #remove 2, get bifc'n 
 
         self.pars['PP'] = periodic_forcing
 
@@ -197,7 +204,7 @@ class DGRate(object):
 
     def plot_cell_fi(self):
         params = self.parameters()
-        currs = np.linspace(0, 0.033, 12)
+        currs = np.linspace(0, 0.06, 20)
 
         g_fi = []
         m_fi = []
@@ -227,5 +234,26 @@ class DGRate(object):
 
 
 oscillations = ['theta', 'alpha', 'gamma', 'delta']
+strength = np.linspace(0,2,30)
+gain = np.linspace(0, 10, 30)
+fbi = np.linspace(0,4,40)
+
+#dg = DGRate('theta', 1, 2.5, 3)
+
+# studying bifurcations:
+'''
+for w in strength:
+    for f in fbi:
+        dg = DGRate('theta', f, w) # f, w, g 
+        print("testing params of", f, w)
+'''
+
+# gamma unstable regime 
 for freq in oscillations:
-    dg = DGRate(freq)
+    dg = DGRate(freq, 1.65, 1.65)
+
+# gamma stable regime
+for freq in oscillations:
+    dg = DGRate(freq, 2.05, 0.207)
+    #dg = DGRate(freq, 3, 0.2)
+    
