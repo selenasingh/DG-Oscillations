@@ -1,6 +1,13 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from math import cos, pi
+
+# nicer font options:
+import matplotlib
+matplotlib.rcParams['mathtext.fontset'] = 'cm'  # computer modern 
+matplotlib.rcParams['font.family'] = 'STIXGeneral'
+matplotlib.rcParams.update({'font.size': 12}) #12 rasters
+
+import matplotlib.pyplot as plt
 
 from pathlib import Path
 Path("figures").mkdir(exist_ok=True)
@@ -22,7 +29,8 @@ class DGRate(object):
         self.flag = PP_freq + '_' + str(fbi) + '_' + str(PP_weight)
 
         #self.plot_dg_rates()
-        #self.plot_cell_fi()
+        self.plot_cell_fi()
+        self.plot_GC_rates()
 
     def parameters(self, **kwargs):
 
@@ -184,7 +192,8 @@ class DGRate(object):
         params = self.parameters()
         g, b, m, h = self.simulate_DG(**params)
 
-        fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(5, 1)
+        fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(5, 1, figsize=(4,5))
+
         ax1.plot(params['range_t'], h, color='0.5', label='HIPP')
         ax1.set_ylabel("HIPP")
 
@@ -199,9 +208,30 @@ class DGRate(object):
 
         ax5.plot(params['range_t'], params['PP'], color='0.5', label='PP')
         ax5.set_ylabel("PP")
+        ax5.set_xlabel("Time (ms)")
 
         fig.tight_layout()
-        fig.savefig('figures/population_rates_%s.png' % self.flag, bbox_inches="tight")
+        fig.align_ylabels()
+        fig.savefig('figures/population_rates_%s.pdf' % self.flag, bbox_inches="tight")
+        plt.close()
+
+    def plot_GC_rates(self):
+        params = self.parameters(T = 750)
+        g, b, m, h = self.simulate_DG(**params)
+
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5,4), gridspec_kw={'height_ratios': [4, 1]})
+
+        ax1.plot(params['range_t'], g, color='0.5', label='GC')
+        ax1.set_ylabel("DG")
+
+        ax2.plot(params['range_t'], params['PP'], color='0.5', label='PP')
+        ax2.set_ylabel("PP")
+        ax2.set_xlabel("Time (ms)")
+
+        fig.tight_layout()
+        fig.align_ylabels()
+        plt.setp(ax1.get_xticklabels(), visible=False)
+        fig.savefig('figures/GC_rates_%s.pdf' % self.flag, bbox_inches="tight")
         plt.close()
 
     def plot_cell_fi(self):
@@ -209,29 +239,38 @@ class DGRate(object):
         currs = np.linspace(0, 0.06, 20)
 
         g_fi = []
+        g_fi_m = []
+        g_fi_h= []
         m_fi = []
         h_fi = []
         b_fi = []
 
         for current in currs:
             g_f = self.F(current, params['gain_g'], params['thresh_g'])
+            g_f_m = self.F(current, (60*1.05), (0.055*0.95))
+            g_f_h = self.F(current, (60*0.90), (0.055*1.1))
             m_f = self.F(current, params['gain_m'], params['thresh_m'])
             h_f = self.F(current, params['gain_h'], params['thresh_h'])
             b_f = self.F(current, params['gain_b'], params['thresh_b'])
 
             g_fi.append(g_f)
+            g_fi_m.append(g_f_m)
+            g_fi_h.append(g_f_h)
             m_fi.append(m_f)
             h_fi.append(h_f)
             b_fi.append(b_f)
 
+        plt.figure(figsize=(6,6))
         plt.plot(currs, g_fi, color = 'k', linestyle = 'solid', label='GC')
+        plt.plot(currs, g_fi_m, color = 'red', linestyle = 'solid', label='GC +')
+        plt.plot(currs, g_fi_h, color = 'blue', linestyle = 'solid', label='GC -')
         plt.plot(currs, h_fi, color = 'k', linestyle = 'dashdot', label='HIPP')
         plt.plot(currs, m_fi, color = 'k', linestyle = 'dotted', label='MC')
         plt.plot(currs, b_fi, color = 'k', linestyle = 'dashed', label='BC')
         plt.legend()
         plt.xlabel('Population Input')
         plt.ylabel('Population Response')
-        plt.savefig('figures/all_fi.png')
+        plt.savefig('figures/all_fi.pdf')
         plt.close()
     
     def return_rate_only(self):
@@ -244,9 +283,17 @@ strength = np.linspace(0,2,30)
 gain = np.linspace(0, 10, 30)
 fbi = np.linspace(0,4,40)
 
-#dg = DGRate('theta', 1.65, 1.65)
-#dg = DGRate('theta', 2.05, 0.207)
+# single runs 
+'''
+for freq in oscillations:
+     dg_1 = DGRate(freq, 3, 0.07)
+     dg_2 = DGRate(freq, 0.25, 1.51)
+     dg_3 = DGRate(freq, 3, 1.75)
+     dg_4 = DGRate(freq, 0.25, 0.07)
+     dg_5 = DGRate(freq, 3.75, 0.07)
+'''
 
+#dg_1 = DGRate('theta', 0.25, 1.51)
 # studying bifurcations:
 '''
 for w in strength:      #PP synaptic strength

@@ -8,9 +8,17 @@
 ### ------------------------------------------------------- ###
 
 import numpy as np
-import matplotlib.pyplot as plt
 from DG_rate import DGRate 
 from math import cos, pi
+
+# nicer font options:
+import matplotlib
+matplotlib.rcParams['mathtext.fontset'] = 'cm'  # computer modern 
+matplotlib.rcParams['font.family'] = 'STIXGeneral'
+matplotlib.rcParams.update({'font.size': 18})
+
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 
 # folder for figure saving
 from pathlib import Path
@@ -43,25 +51,25 @@ for w in strength:
     dg = DGRate('theta', 3, w)
     solns = dg.return_rate_only()
     gc = solns[0]
-    limcycle_min_peak.append(min(gc[30500:32250]))  # bounds chosen s.t. only evaluating at theta peak
-    limcycle_max_peak.append(max(gc[30500:32250]))
-    limcycle_min_trough.append(min(gc[47000:47250]))  # bounds chosen s.t. only evaluating at theta trough
-    limcycle_max_trough.append(max(gc[47000:47250]))
+    limcycle_min_peak.append(min(gc[30375:32375]))  # bounds chosen s.t. only evaluating at theta peak
+    limcycle_max_peak.append(max(gc[30375:32375]))
+    limcycle_min_trough.append(min(gc[46125:48125]))  # bounds chosen s.t. only evaluating at theta trough
+    limcycle_max_trough.append(max(gc[46125:48125]))
     print("working on PPStrength", w) 
 
 
-fig, axis = plt.subplots(2,1, sharex = True, sharey = True)
+fig, axis = plt.subplots(2,1, sharex = True, sharey = True, figsize=(5,5))
 axis[0].plot(strength, limcycle_max_peak, color='k')
 axis[0].plot(strength, limcycle_min_peak, color='k')
-axis[0].set_ylabel('Population Activity')
 
 axis[1].plot(strength, limcycle_max_trough, color='k')
 axis[1].plot(strength, limcycle_min_trough, color='k')
-axis[1].set_xlabel('PP synaptic strength')
-axis[1].set_ylabel('Population Activity')
-
+axis[1].set_xlabel('PP Synaptic Strength')
+fig.text(0.01, 0.5, 'Population Activity', va='center', rotation='vertical')
+#fig.gca().yaxis.set_major_formatter(mtick.FormatStrFormatter('%.2f'))
 fig.tight_layout()
-fig.savefig('bifrcn/ppstrength.png')
+fig.savefig('bifrcn/ppstrength.pdf')
+
 
 # Re-set lists
 limcycle_min_peak, limcycle_max_peak, limcycle_min_trough, limcycle_max_trough = initialize_lists()
@@ -71,24 +79,23 @@ for f in fffb:
     dg = DGRate('theta', f, 0.07)
     solns = dg.return_rate_only()
     gc = solns[0]
-    limcycle_min_peak.append(min(gc[30500:32250]))
-    limcycle_max_peak.append(max(gc[30500:32250]))
-    limcycle_min_trough.append(min(gc[47000:47250]))
-    limcycle_max_trough.append(max(gc[47000:47250]))
+    limcycle_min_peak.append(min(gc[30375:32375]))
+    limcycle_max_peak.append(max(gc[30375:32375]))
+    limcycle_min_trough.append(min(gc[46125:48125]))
+    limcycle_max_trough.append(max(gc[46125:48125]))
     print("working on fffb PP = 0.07 condition", f)
 
-fig1, axis = plt.subplots(2,1, sharex = True, sharey = True)
+fig1, axis = plt.subplots(2,1, sharex = True, sharey = True, figsize=(5,5))
 axis[0].plot(fffb, limcycle_max_peak, color='k')
 axis[0].plot(fffb, limcycle_min_peak, color='k')
-axis[0].set_ylabel('Population Activity')
 
 axis[1].plot(fffb, limcycle_max_trough, color='k')
 axis[1].plot(fffb, limcycle_min_trough, color='k')
-axis[1].set_xlabel('FF/FB synapse strength')
-axis[1].set_ylabel('Population Activity')
+axis[1].set_xlabel('FF/FB Synapse Strength')
+fig1.text(0.01, 0.5, 'Population Activity', va='center', rotation='vertical')
 
 fig1.tight_layout()
-fig1.savefig('bifrcn/fffb_strength_pp0.07.png')
+fig1.savefig('bifrcn/fffb_strength_pp0.07.pdf')
 
 # Re-set lists
 limcycle_min_peak, limcycle_max_peak, limcycle_min_trough, limcycle_max_trough = initialize_lists()
@@ -98,21 +105,20 @@ for f in fffb:
     dg = DGRate('theta', f, 1.5)
     solns = dg.return_rate_only()
     gc = solns[0]
-    limcycle_min_peak.append(min(gc[30500:32250]))
-    limcycle_max_peak.append(max(gc[30500:32250]))
-    limcycle_min_trough.append(min(gc[47000:47250]))
-    limcycle_max_trough.append(max(gc[47000:47250]))
+    limcycle_min_peak.append(min(gc[30375:32375]))
+    limcycle_max_peak.append(max(gc[30375:32375]))
+    limcycle_min_trough.append(min(gc[46125:48125]))
+    limcycle_max_trough.append(max(gc[46125:48125]))
     print("working on fffb PP = 1.5 condition", f)
 
-fig2, axis = plt.subplots(2,1, sharex = True, sharey = True)
+fig2, axis = plt.subplots(2,1, sharex = True, sharey = True, figsize=(5,5))
 axis[0].plot(fffb, limcycle_max_peak, color='k')
 axis[0].plot(fffb, limcycle_min_peak, color='k')
-axis[0].set_ylabel('Population Activity')
 
 axis[1].plot(fffb, limcycle_max_trough, color='k')
 axis[1].plot(fffb, limcycle_min_trough, color='k')
-axis[1].set_xlabel('FF/FB synapse strength')
-axis[1].set_ylabel('Population Activity')
+axis[1].set_xlabel('FB/FF Synapse Strength')
+fig2.text(0.01, 0.5, 'Population Activity', va='center', rotation='vertical')
 
 fig2.tight_layout()
-fig2.savefig('bifrcn/fffb_strength_pp1.50.png')
+fig2.savefig('bifrcn/ffFb_strength_pp1.50.pdf')
