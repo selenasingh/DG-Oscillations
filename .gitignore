@@ -1,0 +1,6 @@
+figures/
+bifrcn/
+.DS_Store
+tests.ipynb
+__pycache__/DG_rate.cpython-38.pyc
+__pycache__/DG_rate.cpython-39.pyc
