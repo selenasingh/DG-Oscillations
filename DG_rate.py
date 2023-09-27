@@ -28,7 +28,7 @@ class DGRate(object):
 
         self.flag = PP_freq + '_' + str(fbi) + '_' + str(PP_weight)
 
-        #self.plot_dg_rates()
+        self.plot_dg_rates()
         self.plot_cell_fi()
         self.plot_GC_rates()
 
@@ -36,7 +36,7 @@ class DGRate(object):
 
         # gc parameters
         self.pars['tau_g'] = 3.1  # membrane timescale of granule cell [ms]
-        self.pars['gain_g'] = 60  # gain of granule cell (3 matches)
+        self.pars['gain_g'] = 60  # gain of granule cell 
         self.pars['thresh_g'] = 0.055  # threshold of granule cell
 
         # bc parameters
@@ -57,10 +57,10 @@ class DGRate(object):
         # synaptic weights
         self.pars['wgg'] = 0.  # GC to GC   ; mossy fiber "sprouting"
         self.pars['wmg'] = 1.  # MC to GC
-        #self.pars['wbg'] = 3  # BC to GC ; 1 for lesion study
+        self.pars['wbg'] = 3  # BC to GC ; 1 for lesion study
         self.pars['whg'] = 1.  # HC to GC
         self.pars['wbb'] = 1.  # BC to BC
-        #self.pars['wgb'] = 3.  # GC to BC ; 0 for lesion study
+        self.pars['wgb'] = 3.  # GC to BC ; 0 for lesion study
         self.pars['wmb'] = 1.  # MC to BC
         self.pars['whb'] = 1.  # HC to BC
         self.pars['wmm'] = 1.  # MC to MC
@@ -70,7 +70,7 @@ class DGRate(object):
         self.pars['wmh'] = 1.  # MC to HC
         self.pars['wgh'] = 1.  # GC to HC
 
-        #self.pars['wPPg'] = 1  # scale PP synaptic weight to gcs ; 2.0 for lesion study
+        self.pars['wPPg'] = 1  # scale PP synaptic weight to gcs 
         self.pars['wPPb'] = self.pars['wPPg']/2  # scale PP synaptic input to bcs
 
         # integration parameters
